@@ -1,0 +1,5 @@
+echo ".DS_Store" >> .gitignore
+echo "bin/" >> .gitignore
+echo "obj/" >> .gitignore
+echo "node_modules/" >> .gitignore
+git add .gitignore

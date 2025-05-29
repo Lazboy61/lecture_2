@@ -1,0 +1,43 @@
+services:
+  postgres:
+    image: postgres:16.2
+    container_name: cddb_db
+    environment:
+      POSTGRES_DB: cddb_quintor
+      POSTGRES_USER: cddb_quintor
+      POSTGRES_PASSWORD: quintor_pw
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cddb_quintor -d cddb_quintor"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./album-api
+    container_name: cddb_backend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=postgres;Database=cddb_quintor;Username=cddb_quintor;Password=quintor_pw"
+    ports:
+      - "28080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: cddb_frontend
+    ports:
+      - "20080:80"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: cddb_net
+    driver: bridge
