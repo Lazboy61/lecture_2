@@ -33,6 +33,8 @@ services:
     ports:
       - "20080:80"
     restart: unless-stopped
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
